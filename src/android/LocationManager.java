@@ -100,7 +100,37 @@ public class LocationManager extends CordovaPlugin implements IBeaconConsumer {
         //TODO AddObserver when page loaded
 
     }
-    
+
+    /**
+     * Called when the WebView does a top-level navigation or refreshes.
+     *
+     * Stops any ongoing ranging and monitoring.
+     */
+    @Override
+    public void onReset() {
+        if (null != iBeaconManager) {
+            // Stop monitoring.
+            try {
+                for (Region region : iBeaconManager.getMonitoredRegions()) {
+                    iBeaconManager.stopMonitoringBeaconsInRegion(region);
+                }
+            }
+            catch (RemoteException e) {
+                Log.e(TAG, "stopMonitoringBeaconsInRegion error: " + e);
+            }
+
+            // Stop ranging.
+            try {
+                for (Region region : iBeaconManager.getRangedRegions()) {
+                    iBeaconManager.stopRangingBeaconsInRegion(region);
+                }
+            }
+            catch (RemoteException e) {
+                Log.e(TAG, "stopRangingBeaconsInRegion error: " + e);
+            }
+        }
+    }
+
     /**
      * The final call you receive before your activity is destroyed.
      */ 

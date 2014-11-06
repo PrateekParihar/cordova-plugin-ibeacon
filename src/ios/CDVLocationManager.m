@@ -40,6 +40,31 @@
     [self resumeEventPropagationToDom]; // DOM propagation when Location Manager, PeripheralManager initiated
 }
 
+/**
+ * From interface CDVPlugin.
+ * Called when the WebView navigates or refreshes.
+ */
+- (void) onReset {
+
+    // Stop any ongoing monitoring or ranging.
+    if (nil != self.locationManager)
+    {
+        for (CLRegion* region in self.locationManager.monitoredRegions) {
+            [self.locationManager stopMonitoringForRegion:region];
+        }
+
+        for (CLBeaconRegion* region in self.locationManager.rangedRegions) {
+            [self.locationManager stopRangingBeaconsInRegion:region];
+        }
+    }
+
+    // Stop any ongoing advertising.
+    if (nil != self.peripheralManager)
+    {
+        [self.peripheralManager stopAdvertising];
+    }
+}
+
 - (void) initLocationManager {
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
