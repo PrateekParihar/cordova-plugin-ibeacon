@@ -412,7 +412,7 @@
 - (void) requestAlwaysAuthorization:(CDVInvokedUrlCommand*)command {
 
     // Set the background values for IOS 9 as part of this call
-    if (!IsAtLeastiOSVersion(@"9.0")) {
+    if (IsAtLeastiOSVersion(@"9.0")) {
         self.locationManager.allowsBackgroundLocationUpdates = YES;
     }
     // Under iOS 8, there is no need for these permissions, therefore we can
