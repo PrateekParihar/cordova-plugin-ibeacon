@@ -28,6 +28,8 @@
 
 - (void)pluginInitialize
 {
+	NSLog(@"iBeacon pluginInitialize");
+
     [self initEventQueue];
     [self pauseEventPropagationToDom]; // Before the DOM is loaded we'll just keep collecting the events and fire them later.
 
@@ -47,6 +49,8 @@
  */
 - (void) onReset {
 
+	NSLog(@"iBeacon onReset");
+
 	// Stop any ongoing monitoring or ranging.
 	if (nil != self.locationManager)
 	{
@@ -64,6 +68,12 @@
 	{
 		[self.peripheralManager stopAdvertising];
 	}
+
+	// Pause event propagation.
+	[self pauseEventPropagationToDom];
+
+	// Cancel pending operations.
+	[self.queue cancelAllOperations];
 }
 
 - (void) initLocationManager {
@@ -468,7 +478,7 @@
     // send back OK to the calling DOM without any further ado.
     if (!IsAtLeastiOSVersion(@"8.0")) {
         CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];        
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     } else {
 
         [self _handleCallSafely:^CDVPluginResult *(CDVInvokedUrlCommand* command) {
