@@ -40,6 +40,40 @@
     [self resumeEventPropagationToDom]; // DOM propagation when Location Manager, PeripheralManager initiated
 }
 
+/**
+ * From interface CDVPlugin.
+ * Called when the WebView navigates or refreshes.
+ * This is needed by Evothings Studio, or any multi-page app.
+ */
+- (void) onReset {
+
+	NSLog(@"iBeacon onReset");
+
+	// Stop any ongoing monitoring or ranging.
+	if (nil != self.locationManager)
+	{
+		for (CLRegion* region in self.locationManager.monitoredRegions) {
+			[self.locationManager stopMonitoringForRegion:region];
+		}
+
+		for (CLBeaconRegion* region in self.locationManager.rangedRegions) {
+			[self.locationManager stopRangingBeaconsInRegion:region];
+		}
+	}
+
+	// Stop any ongoing advertising.
+	if (nil != self.peripheralManager)
+	{
+		[self.peripheralManager stopAdvertising];
+	}
+
+	// Pause event propagation.
+	[self pauseEventPropagationToDom];
+
+	// Cancel pending operations.
+	[self.queue cancelAllOperations];
+}
+
 - (void) initLocationManager {
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
